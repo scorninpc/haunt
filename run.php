@@ -13,9 +13,9 @@ $s = `xdpyinfo | grep resolution`;
 //	Gtk::rc_parse(dirname(__FILE__).'/theme-mobile.rc');
 //}
 //else
-{
-Gtk::rc_parse(dirname(__FILE__).'/theme-laptop.rc');
-}
+// {
+// Gtk::rc_parse(dirname(__FILE__).'/theme-laptop.rc');
+// }
 
 if ( class_exists( 'Dbus' ) )
 {
@@ -34,7 +34,7 @@ else
 }
 $wlanPos = false;
 
-$window = new Twitter;
+$window = new Twitter();
 $window->show_all();
 Gtk::main();
 ?>

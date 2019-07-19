@@ -5,6 +5,7 @@ class TwitterSettingsFilterWindow extends GtkWindow
 
 	function __construct( $twitter )
 	{
+		die("\n----\nOK4\n----\n");
 		parent::__construct();
 
 		$this->twitter = $twitter;

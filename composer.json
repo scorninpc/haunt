@@ -1,0 +1,7 @@
+{
+    "require": {
+        "zetacomponents/base": "^1.9",
+        "zetacomponents/workflow": "^1.5",
+        "zetacomponents/database": "^1.5"
+    }
+}

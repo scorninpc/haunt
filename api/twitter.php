@@ -1,4 +1,6 @@
 <?php
+
+
 class drtFetcher
 {
 	public $username;
@@ -63,13 +65,13 @@ class drtFetcher
 
 	function updateGUI()
 	{
-		if ( !class_exists( 'gtk' ) ) 
+		if ( !class_exists( 'Gtk' ) ) 
 		{
 			return;
 		}
         while(Gtk::events_pending() || Gdk::events_pending())
 		{
-            Gtk::main_iteration_do(true);
+            Gtk::main_iteration();
         } 
 	}
 
@@ -83,7 +85,7 @@ class drtFetcher
 	function message( $msg )
 	{
 		echo $msg, "\n";
-		if ( !class_exists( 'gtk' ) ) 
+		if ( !class_exists( 'Gtk' ) ) 
 		{
 			return;
 		}

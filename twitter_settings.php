@@ -5,6 +5,7 @@ class TwitterSettingsWindow extends GtkWindow
 
 	function __construct( $twitter )
 	{
+		die("\n----\nOK2\n----\n");
 		parent::__construct();
 		$this->set_size_request( 480, 600 );
 		$this->set_title( 'Settings' );

@@ -1,4 +1,7 @@
 <?php
+
+
+
 class Twitter extends GtkWindow
 {
 	protected $statusicon;
@@ -18,24 +21,25 @@ class Twitter extends GtkWindow
 		if ( $this->message_renderer )
 		{
 			$width = function_exists( 'imagecreatefromstring' ) ? 112 : 60;
-			$this->message_renderer->set_property('wrap-width', $v->width - $width);
-			$this->message_renderer->set_property('width', $v->width - $width);
+			// $this->message_renderer->set_property('wrap-width', $v->width - $width);
+			// $this->message_renderer->set_property('width', $v->width - $width);
 		}
 	}
 
 	function destroy()
 	{
-		gtk::main_quit();
+		Gtk::main_quit();
 		die();
 	}
 
 	public function __construct() 
 	{
-		parent::__construct();
-		$accels = new GtkAccelGroup();
-		$this->add_accel_group( $accels );
 
-		$this->set_icon($this->render_icon(Gtk::STOCK_ABOUT, Gtk::ICON_SIZE_DIALOG));
+		parent::__construct(Gtk::WINDOW_TOPLEVEL);
+		// $accels = new GtkAccelGroup();
+		// $this->add_accel_group( $accels );
+
+		// $this->set_icon($this->render_icon(Gtk::STOCK_ABOUT, Gtk::ICON_SIZE_DIALOG));
 		$this->set_size_request(800, 600);
 		$this->move(1108, 398);
 		$this->set_title('Twitter Client');
@@ -48,48 +52,57 @@ class Twitter extends GtkWindow
 
 		$tb = new GtkToolbar();
 		$tb->set_show_arrow(false);
-		$tb->set_property( 'toolbar-style', Gtk::TOOLBAR_BOTH );
-		$tb->set_property( 'icon-size', 6 );
-		$this->updatebutton = GtkToolButton::new_from_stock(Gtk::STOCK_REFRESH);
-		$lbl = new GtkLabel();
+
+		// $tb->set_property( 'toolbar-style', GtkToolbarStyle::BOTH );
+		// $tb->set_property( 'icon-size', 6 );
+		$this->updatebutton = new GtkToolButton("");
+		$this->updatebutton->set_icon_name("gtk-refresh", GtkIconSize::SMALL_TOOLBAR);
+		$lbl = new GtkLabel("");
+		
 		$lbl->set_markup( '<span underline="single">U</span>pdate' );
 		$this->updatebutton->set_label_widget( $lbl );
-		$this->updatebutton->connect_simple('clicked', array($this, 'update'));
-		$this->updatebutton->add_accelerator( 'clicked', $accels, Gdk::KEY_U, Gdk::MOD1_MASK, 0 );
+		$this->updatebutton->connect('clicked', array($this, 'update'));
+		// $this->updatebutton->add_accelerator( 'clicked', $accels, Gdk::KEY_U, Gdk::MOD1_MASK, 0 );
 		$this->updatebutton->set_use_underline( true );
 		$tb->insert($this->updatebutton, -1);
 
-		$this->replybutton = GtkToolButton::new_from_stock(Gtk::STOCK_OK);
-		$lbl = new GtkLabel();
+		$this->replybutton = new GtkToolButton("");
+		$this->replybutton->set_icon_name("gtk-ok", GtkIconSize::SMALL_TOOLBAR);
+		$lbl = new GtkLabel("");
 		$lbl->set_markup( '<span underline="single">R</span>eply' );
 		$this->replybutton->set_label_widget( $lbl );
-		$this->replybutton->connect_simple('clicked', array($this, 'reply'));
-		$this->replybutton->add_accelerator( 'clicked', $accels, Gdk::KEY_R, Gdk::MOD1_MASK, 0 );
+		$this->replybutton->connect('clicked', array($this, 'reply'));
+		// $this->replybutton->add_accelerator( 'clicked', $accels, Gdk::KEY_R, Gdk::MOD1_MASK, 0 );
 		$tb->insert($this->replybutton, -1);
 
-		$this->retweetbutton = GtkToolButton::new_from_stock(Gtk::STOCK_CONVERT);
-		$lbl = new GtkLabel();
+		$this->retweetbutton = new GtkToolButton("");
+		$this->retweetbutton->set_icon_name("gtk-convert", GtkIconSize::SMALL_TOOLBAR);
+		$lbl = new GtkLabel("");
 		$lbl->set_markup( 'Re<span underline="single">t</span>weet' );
 		$this->retweetbutton->set_label_widget( $lbl );
-		$this->retweetbutton->connect_simple('clicked', array($this, 'retweet'));
-		$this->retweetbutton->add_accelerator( 'clicked', $accels, Gdk::KEY_T, Gdk::MOD1_MASK, 0 );
+		$this->retweetbutton->connect('clicked', array($this, 'retweet'));
+		// $this->retweetbutton->add_accelerator( 'clicked', $accels, Gdk::KEY_T, Gdk::MOD1_MASK, 0 );
 		$tb->insert($this->retweetbutton, -1);
 
-		$translatebutton = GtkToolButton::new_from_stock( Gtk::STOCK_UNDERLINE );
-		$lbl = new GtkLabel();
+		$translatebutton = new GtkToolButton("");
+		$translatebutton->set_icon_name("gtk-underline", GtkIconSize::SMALL_TOOLBAR);
+		$lbl = new GtkLabel("");
 		$lbl->set_markup( 'Tr<span underline="single">a</span>nslate' );
 		$translatebutton->set_label_widget( $lbl );
-		$translatebutton->connect_simple( 'clicked', array( $this, 'translate' ) );
-		$translatebutton->add_accelerator( 'clicked', $accels, Gdk::KEY_A, Gdk::MOD1_MASK, 0 );
+		$translatebutton->connect( 'clicked', array( $this, 'translate' ) );
+		// $translatebutton->add_accelerator( 'clicked', $accels, Gdk::KEY_A, Gdk::MOD1_MASK, 0 );
 		$tb->insert( $translatebutton, -1 );
 
-		$settingsbutton = GtkToolButton::new_from_stock( Gtk::STOCK_PROPERTIES );
-		$lbl = new GtkLabel();
+		$settingsbutton = new GtkToolButton("");
+		$settingsbutton->set_icon_name("gtk-ok", GtkIconSize::SMALL_TOOLBAR);
+		$lbl = new GtkLabel("");
 		$lbl->set_markup( '<span underline="single">S</span>ettings' );
 		$settingsbutton->set_label_widget( $lbl );
-		$settingsbutton->connect_simple( 'clicked', array( $this, 'showSettings' ) );
-		$settingsbutton->add_accelerator( 'clicked', $accels, Gdk::KEY_S, Gdk::MOD1_MASK, 0 );
+		$settingsbutton->connect( 'clicked', array( $this, 'showSettings' ) );
+		// $settingsbutton->add_accelerator( 'clicked', $accels, Gdk::KEY_S, Gdk::MOD1_MASK, 0 );
+
 		$tb->insert( $settingsbutton, -1 );
+
 
 		$this->connect('key-press-event', array( $this, 'onKeyPress' ) );
 
@@ -100,38 +113,39 @@ class Twitter extends GtkWindow
 		$this->updateentry->connect('activate', array($this, 'newtweet'));
 
 		// User image pixbuf, user image string, user name, display name, user id, text, favorited, created_at, id, color, read, type
-		$store = new GtkListStore(GdkPixbuf::gtype, Gobject::TYPE_STRING, Gobject::TYPE_STRING, Gobject::TYPE_STRING,
+		$store = new GtkListStore(GObject::TYPE_OBJECT, Gobject::TYPE_STRING, Gobject::TYPE_STRING, Gobject::TYPE_STRING,
 			Gobject::TYPE_STRING, GObject::TYPE_STRING, GObject::TYPE_BOOLEAN, GObject::TYPE_STRING,
 			Gobject::TYPE_STRING, GObject::TYPE_STRING, GObject::TYPE_BOOLEAN, GObject::TYPE_STRING );
-		$store->set_sort_column_id(6, Gtk::SORT_DESCENDING);
+		// $store->set_sort_column_id(6, GtkSortType::DESCENDING); // Not implemented yet
 
 		// stuff vbox
-		$vbox = new GtkVBox();
+		$vbox = new GtkBox(GtkOrientation::VERTICAL);
 		$this->add($vbox);
 		$vbox->pack_start($tb, false, false);
 		$scrolled = new GtkScrolledWindow();
-		$scrolled->set_policy(Gtk::POLICY_NEVER, Gtk::POLICY_ALWAYS);
+		$scrolled->set_policy(GtkPolicyType::NEVER, GtkPolicyType::ALWAYS);
 		$vbox->pack_start($scrolled);
 		$this->treeview = new GtkTreeView($store);
 		$scrolled->add($this->treeview);
-		$this->treeview->set_property('headers-visible', false);
-		$this->treeview->set_rules_hint(true);
+		// $this->treeview->set_property('headers-visible', false);
+		// $this->treeview->set_rules_hint(true); // Not implemented yet
 
-		$this->treeview->set_events(Gdk::BUTTON_PRESS_MASK);
+		// $this->treeview->set_events(Gdk::BUTTON_PRESS_MASK); // Not implemented yet
 		$this->treeview->connect('button-press-event', array( $this, 'onButtonPress' ) );
 		$this->treeview->connect('button-release-event', array( $this, 'onButtonRelease') );
 		$this->treeview->connect('motion-notify-event', array( $this, 'onDrag') );
 
-		$ubox = new GtkHBox();
+		$ubox = new GtkBox(GtkOrientation::HORIZONTAL);
 		$vbox->pack_start($ubox, false, false);
 
-		$this->operationLabel = new GtkLabel();
+		$this->operationLabel = new GtkLabel("");
 		$this->operationLabel->set_markup_with_mnemonic( '<span underline="single">N</span>ew: ' );
 		$ubox->pack_start($this->operationLabel, false, false);
 		$ubox->pack_start($this->updateentry, true, true);
-		$this->newtweetbutton = GtkToolButton::new_from_stock(Gtk::STOCK_ADD);
-		$this->newtweetbutton->connect_simple('clicked', array($this, 'newtweet'));
-		$this->newtweetbutton->add_accelerator( 'clicked', $accels, Gdk::KEY_Return, Gdk::MOD1_MASK, 0 );
+		$this->newtweetbutton = new GtkToolButton("");
+		$this->newtweetbutton->set_icon_name("gtk-ok", GtkIconSize::SMALL_TOOLBAR);
+		$this->newtweetbutton->connect('clicked', array($this, 'newtweet'));
+		// $this->newtweetbutton->add_accelerator( 'clicked', $accels, Gdk::KEY_Return, Gdk::MOD1_MASK, 0 );
 		$ubox->pack_start($this->newtweetbutton, false, false);
 
 		$vbox->pack_start($this->statusbar, false, false);
@@ -139,15 +153,15 @@ class Twitter extends GtkWindow
 		$this->statusbar->push(1, 'last updated ' . date('Y-m-d H:i') );
 
 		$picture_renderer = new GtkCellRendererPixbuf();
-		$picture_renderer->set_property('yalign', 0);
+		// $picture_renderer->set_property('yalign', 0);
 		$picture_column = new GtkTreeViewColumn('Picture', $picture_renderer, 'pixbuf', 0, 'cell-background', 9 );
 		$this->treeview->append_column($picture_column);
 
 		$width = function_exists( 'imagecreatefromstring' ) ? 112 : 60;
 		$this->message_renderer = new GtkCellRendererText();
-		$this->message_renderer->set_property('wrap-mode', Gtk::WRAP_WORD);
-		$this->message_renderer->set_property('wrap-width', 480 - 60 - $width);
-		$this->message_renderer->set_property('width', 480 - 60 - $width);
+		// $this->message_renderer->set_property('wrap-mode', Gtk::WRAP_WORD);
+		// $this->message_renderer->set_property('wrap-width', 480 - 60 - $width);
+		// $this->message_renderer->set_property('width', 480 - 60 - $width);
 
 		$message_column = new GtkTreeViewColumn('Message', $this->message_renderer, 'text', 4, 'background', 9 );
 		$message_column->set_cell_data_func($this->message_renderer, array($this, 'message_markup'));
@@ -469,9 +483,9 @@ class Twitter extends GtkWindow
 		$message = preg_replace( '/@([a-z0-9_]+)/i', '<i>@\\1</i>', $message );
 		$markedUp = "<span><b>$display_name ($user)</b>:\n$message\n<small>$time - $formatted_time</small></span>";
 		$markedUp = "<b>$display_name ($user)</b>:\n$message\n<small>$time - $formatted_time</small>";
-		$cell->set_property('markup', $markedUp);
-		$cell->set_property('foreground', '#000000');
-		$cell->set_property('foreground-set', true);
+		// $cell->set_property('markup', $markedUp);
+		// $cell->set_property('foreground', '#000000');
+		// $cell->set_property('foreground-set', true);
 	}
 
 	protected function distance($from) {

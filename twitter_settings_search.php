@@ -1,11 +1,13 @@
 <?php
+
 class TwitterSettingsSearchWindow extends GtkWindow
 {
 	public $twitter = null;
 
 	function __construct( $twitter )
 	{
-		parent::__construct();
+die("\n----\nOK3\n----\n");
+		parent::__construct(Gtk::WINDOW_TOPLEVEL);
 
 		$this->twitter = $twitter;
 		$this->set_size_request( 480, 600 );
