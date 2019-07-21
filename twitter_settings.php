@@ -5,111 +5,116 @@ class TwitterSettingsWindow extends GtkWindow
 
 	function __construct( $twitter )
 	{
-		die("\n----\nOK2\n----\n");
-		parent::__construct();
+		parent::__construct(Gtk::WINDOW_TOPLEVEL);
 		$this->set_size_request( 480, 600 );
 		$this->set_title( 'Settings' );
-		$this->connect_simple( 'show', array( $this, 'onShow' ) );
+		$this->connect( 'show', array( $this, 'onShow' ) );
 
-		$mainVBox = new GtkVBox();
+		$mainVBox = new GtkBox(GtkOrientation::VERTICAL);
 		$this->add( $mainVBox );
 
-		$tbl = new GtkTable( 8, 2, false );
-		$mainVBox->pack_start( $tbl, false, false );
+		$tbl = new GtkGrid();
+		$mainVBox->pack_start( $tbl, TRUE, TRUE , 0 );
 
 		$lbl = new GtkLabel( 'Username: ' );
-		$tbl->attach( $lbl, 0, 1, 1, 2, Gtk::SHRINK );
+		$tbl->attach( $lbl, 0, 0, 1, 1);
 		$lbl->set_size_request( 180, 80 );
 		$this->usernameEntry = new GtkEntry();
 		$this->usernameEntry->set_width_chars( 16 );
-		$tbl->attach( $this->usernameEntry, 1, 2, 1, 2, Gtk::EXPAND );
+		$tbl->attach( $this->usernameEntry, 1, 0, 1, 1);
 
 		$lbl = new GtkLabel( 'Consumer Key: ' );
-		$tbl->attach( $lbl, 0, 1, 2, 3, Gtk::SHRINK );
+		$tbl->attach( $lbl, 0, 1, 1, 1);
 		$lbl->set_size_request( 180, 80 );
 		$this->consumerKeyEntry = new GtkEntry();
 		$this->consumerKeyEntry->set_width_chars( 16 );
 		$this->consumerKeyEntry->set_visibility( false );
-		$tbl->attach( $this->consumerKeyEntry, 1, 2, 2, 3, Gtk::EXPAND );
+		$tbl->attach( $this->consumerKeyEntry, 1, 1, 1, 1);
 
 		$lbl = new GtkLabel( 'Consumer Secret: ' );
-		$tbl->attach( $lbl, 0, 1, 3, 4, Gtk::SHRINK );
+		$tbl->attach( $lbl, 0, 2, 1, 1);
 		$lbl->set_size_request( 180, 80 );
 		$this->consumerSecretEntry = new GtkEntry();
 		$this->consumerSecretEntry->set_width_chars( 16 );
 		$this->consumerSecretEntry->set_visibility( false );
-		$tbl->attach( $this->consumerSecretEntry, 1, 2, 3, 4, Gtk::EXPAND );
+		$tbl->attach( $this->consumerSecretEntry, 1, 2, 1, 1);
 
 		$lbl = new GtkLabel( 'Access Token: ' );
-		$tbl->attach( $lbl, 0, 1, 4, 5, Gtk::SHRINK );
+		$tbl->attach( $lbl, 0, 3, 1, 1);
 		$lbl->set_size_request( 180, 80 );
 		$this->accessTokenEntry = new GtkEntry();
 		$this->accessTokenEntry->set_width_chars( 16 );
 		$this->accessTokenEntry->set_visibility( false );
-		$tbl->attach( $this->accessTokenEntry, 1, 2, 4, 5, Gtk::EXPAND );
+		$tbl->attach( $this->accessTokenEntry, 1, 3, 1, 1);
 
 		$lbl = new GtkLabel( 'Access Token Secret: ' );
-		$tbl->attach( $lbl, 0, 1, 5, 6, Gtk::SHRINK );
+		$tbl->attach( $lbl, 0, 4, 1, 1);
 		$lbl->set_size_request( 180, 80 );
 		$this->accessTokenSecretEntry = new GtkEntry();
 		$this->accessTokenSecretEntry->set_width_chars( 16 );
 		$this->accessTokenSecretEntry->set_visibility( false );
-		$tbl->attach( $this->accessTokenSecretEntry, 1, 2, 5, 6, Gtk::EXPAND );
+		$tbl->attach( $this->accessTokenSecretEntry, 1, 4, 1, 1);
 
 		$lbl = new GtkLabel( 'Use GPS: ' );
-		$tbl->attach( $lbl, 0, 1, 6, 7, Gtk::SHRINK );
+		$tbl->attach( $lbl, 0, 5, 1, 1);
 		$lbl->set_size_request( 180, 80 );
 		$this->useGpsEntry = new GtkCheckButton();
 		$this->useGpsEntry->set_size_request( 80, 80 );
 		$this->useGpsEntry->set_alignment( 0.5, 0.5 );
-		$tbl->attach( $this->useGpsEntry, 1, 2, 6, 7, Gtk::EXPAND );
+		$tbl->attach( $this->useGpsEntry, 1, 5, 1, 1);
 
 		$lbl = new GtkLabel( 'Use WLAN: ' );
-		$tbl->attach( $lbl, 0, 1, 7, 8, Gtk::SHRINK );
+		$tbl->attach( $lbl, 0, 6, 1, 1);
 		$lbl->set_size_request( 180, 80 );
 		$this->useWlanEntry = new GtkCheckButton();
 		$this->useWlanEntry->set_size_request( 80, 80 );
 		$this->useWlanEntry->set_alignment( 0.5, 0.5 );
-		$tbl->attach( $this->useWlanEntry, 1, 2, 7, 8, Gtk::EXPAND );
+		$tbl->attach( $this->useWlanEntry, 1, 6, 1, 1);
 
 		$tb = new GtkToolbar();
 		$tb->set_show_arrow(false);
-		$tb->set_property( 'toolbar-style', Gtk::TOOLBAR_BOTH );
-		$tb->set_property( 'icon-size', 6 );
+		// $tb->set_property( 'toolbar-style', Gtk::TOOLBAR_BOTH );
+		// $tb->set_property( 'icon-size', 6 );
 		$tb->set_size_request( 480, 80 );
 
-		$btn = GtkToolButton::new_from_stock( Gtk::STOCK_FIND );
-		$btn->connect_simple( 'clicked', array( $this, 'showSearches' ) );
+		$btn = new GtkToolButton("find");
+		$btn->set_icon_name("gtk-find");
+		
+		$btn->connect( 'clicked', array( $this, 'showSearches' ) );
 		$btn->set_label( 'Searches' );
 		$tb->insert( $btn, -1 );
 
-		$btn = GtkToolButton::new_from_stock( Gtk::STOCK_NO );
-		$btn->connect_simple( 'clicked', array( $this, 'showFilters' ) );
+		$btn = new GtkToolButton("no");
+		$btn->set_icon_name("gtk-no");
+		$btn->connect( 'clicked', array( $this, 'showFilters' ) );
 		$btn->set_label( 'Filters' );
 		$tb->insert( $btn, -1 );
 
-		$tbl->attach( $tb, 0, 2, 8, 9 );
+		$tbl->attach( $tb, 0, 8, 1, 1);
 
-		$spacer = new GtkVBox();
-		$mainVBox->pack_start( $spacer, true, true );
+		$spacer = new GtkBox(GtkOrientation::VERTICAL);
+		$mainVBox->pack_start( $spacer, true, true , 0);
 
 		$tb = new GtkToolbar();
-		$mainVBox->pack_start( $tb, false, false );
+		$mainVBox->pack_start( $tb, TRUE, TRUE , 0);
 		$tb->set_show_arrow(false);
-		$tb->set_property( 'toolbar-style', Gtk::TOOLBAR_BOTH );
-		$tb->set_property( 'icon-size', 6 );
-		$this->closeButton = GtkToolButton::new_from_stock(Gtk::STOCK_OK);
+		// $tb->set_property( 'toolbar-style', Gtk::TOOLBAR_BOTH );
+		// $tb->set_property( 'icon-size', 6 );
+		$this->closeButton = new GtkToolButton("ok");
+		$this->closeButton->set_icon_name("gtk-close");
 		$this->closeButton->set_label( 'Ok' );
-		$this->closeButton->connect_simple( 'clicked', array( $this, 'close' ) );
-		$this->closeButton->set_property( 'can-focus', true );
+		$this->closeButton->connect( 'clicked', array( $this, 'close' ) );
+		// $this->closeButton->set_property( 'can-focus', true );
 		$tb->insert( $this->closeButton, -1 );
 
 		$this->twitter = $twitter;
 		$this->searches = new TwitterSettingsSearchWindow( $twitter );
 		$this->filters = new TwitterSettingsFilterWindow( $twitter );
+
+
 	}
 
-	public function onShow()
+	public function onShow($widget)
 	{
 		$this->closeButton->grab_focus();
 		$settings = $this->twitter->fetchConfigValues();
@@ -142,7 +147,7 @@ class TwitterSettingsWindow extends GtkWindow
 		$this->twitter->saveSetting( 'useGps', $this->useGpsEntry->get_active() ? '1': '0' );
 		$this->twitter->saveSetting( 'wlanGps', $this->useWlanEntry->get_active() ? '1': '0' );
 		$this->twitter->reloadConfig();
-		$this->hide_all();
+		$this->hide();
 	}
 }
 ?>

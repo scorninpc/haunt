@@ -16,8 +16,9 @@ class Twitter extends GtkWindow
 	private   $searchTerm = '';
 	private   $searchMode = false;
 
-	function foo( $a, $v )
+	function foo($a, $v )
 	{
+		die("\n--OK--\n");
 		if ( $this->message_renderer )
 		{
 			$width = function_exists( 'imagecreatefromstring' ) ? 112 : 60;
@@ -44,7 +45,7 @@ class Twitter extends GtkWindow
 		$this->move(1108, 398);
 		$this->set_title('Twitter Client');
 		$this->connect('destroy', array( $this, 'destroy' ) );
-		$this->connect('size-allocate', array( $this, 'foo' ));
+		// $this->connect('size-allocate', array( $this, 'foo' ));
 
 		$this->statusbar = new GtkStatusBar();
 
@@ -124,8 +125,9 @@ class Twitter extends GtkWindow
 		$vbox->pack_start($tb, false, false);
 		$scrolled = new GtkScrolledWindow();
 		$scrolled->set_policy(GtkPolicyType::NEVER, GtkPolicyType::ALWAYS);
-		$vbox->pack_start($scrolled);
+		$vbox->pack_start($scrolled, TRUE, TRUE, 0);
 		$this->treeview = new GtkTreeView($store);
+		$this->treeview_store = $store; // Added to global because get_model not working corretly yet
 		$scrolled->add($this->treeview);
 		// $this->treeview->set_property('headers-visible', false);
 		// $this->treeview->set_rules_hint(true); // Not implemented yet
@@ -164,10 +166,10 @@ class Twitter extends GtkWindow
 		// $this->message_renderer->set_property('width', 480 - 60 - $width);
 
 		$message_column = new GtkTreeViewColumn('Message', $this->message_renderer, 'text', 4, 'background', 9 );
-		$message_column->set_cell_data_func($this->message_renderer, array($this, 'message_markup'));
+		// $message_column->set_cell_data_func($this->message_renderer, array($this, 'message_markup'));
 		$this->treeview->append_column($message_column);
 
-		$this->treeview->set_resize_mode(Gtk::RESIZE_QUEUE);
+		$this->treeview->set_resize_mode(GtkResizeMode::QUEUE);
 
 		$this->settings = new TwitterSettingsWindow( $this->twitter );
 
@@ -184,19 +186,19 @@ class Twitter extends GtkWindow
 	//here we handle the key press events
 	function onKeyPress($widget, $event)
 	{
-		if ($event->state & Gdk::MOD1_MASK && $event->keyval == Gdk::KEY_q) {
+		if ($event->key->state & Gdk::MOD1_MASK && $event->key->keyval == Gdk::KEY_q) {
 			$this->destroy();
 		}
-		if ($event->state & Gdk::MOD1_MASK && $event->keyval == Gdk::KEY_n) {
+		if ($event->key->state & Gdk::MOD1_MASK && $event->key->keyval == Gdk::KEY_n) {
 			$this->setEmptyTweetBox();
 		}
-		if ($event->state & Gdk::MOD1_MASK && $event->keyval == Gdk::KEY_0) {
-			$this->doOpenTweetUrl( $event->keyval );
+		if ($event->key->state & Gdk::MOD1_MASK && $event->key->keyval == Gdk::KEY_0) {
+			$this->doOpenTweetUrl( $event->key->keyval );
 		}
-		if ($event->state & Gdk::MOD1_MASK && in_array($event->keyval, array(Gdk::KEY_1, Gdk::KEY_2, Gdk::KEY_3))) {
-			$this->doUrl( $event->keyval );
+		if ($event->key->state & Gdk::MOD1_MASK && in_array($event->key->keyval, array(Gdk::KEY_1, Gdk::KEY_2, Gdk::KEY_3))) {
+			$this->doUrl( $event->key->keyval );
 		}
-		if ($event->state & Gdk::MOD1_MASK && $event->keyval == Gdk::KEY_f)
+		if ($event->key->state & Gdk::MOD1_MASK && $event->key->keyval == Gdk::KEY_f)
 		{
 			if ($this->searchMode)
 			{
@@ -526,6 +528,8 @@ class Twitter extends GtkWindow
 
 	public function update_timeline()
 	{
+
+
 		// fetch filter words
 		$filterWords = $this->twitter->fetchFilters();
 
@@ -592,7 +596,7 @@ class Twitter extends GtkWindow
 		$q->orderBy( 'status.time', ezcQuerySelect::DESC )->limit( $fetchLimit );
 		$s = $q->prepare();
 		$s->execute();
-		$store = $this->treeview->get_model();
+		$store = $this->treeview_store;
 		$store->clear();
 
 		$firstNew = null;
@@ -609,33 +613,46 @@ class Twitter extends GtkWindow
 				continue;
 			}
 			$pb = null;
+			$pb = GdkPixbuf::new_from_file("/home/scorninpc/Desktop/haunt/twitter16.png");
 			if ( function_exists( 'imagecreatefromstring' ) && !empty( $object['image'] ) ) 
 			{
 				$i = imagecreatefromstring( base64_decode( $object['image'] ) );
 				if (imagesx( $i) <= 48 && imagesy( $i ) <= 48 )
 				{
-					$pb = GdkPixbuf::new_from_gd( $i );
+					// $pb = GdkPixbuf::new_from_gd( $i );
 				}
 			}
-			$iter = $store->append(array(
-				$pb, 'foo', $object['name'], $object['screen_name'],
+echo "\n---OK1.0\n";
+			$iter = $store->append([
+				$pb, 
+				'foo', 
+				$object['name'], 
+				$object['screen_name'],
 				$object['user_id'],
-				$object['text'], true, date( DateTime::RFC822,
-				$object['time']), $object['id'], $this->getColor( $object),
-				$object['read'], $object['type'] ) );
-
+				$object['text'], 
+				true, 
+				date(DateTime::RFC822, $object['time']), 
+				$object['id'], 
+				$this->getColor( $object),
+				$object['read'], 
+				$object['type']
+			]);
+echo "\n---OK1.1\n";
 			if ( $object['read'] != 1 )
 			{
 				$firstNew = $store->get_path( $iter );
 			}
 		}
 
+		$this->treeview->set_model($store);
+
 		if ( $firstNew !== NULL )
 		{
-			$this->treeview->set_cursor( $firstNew );
+			// $this->treeview->set_cursor( $firstNew );
 			$this->treeview->grab_focus();
-			$this->treeview->scroll_to_cell( $firstNew, null, true, 0.9, 0 );
+			// $this->treeview->scroll_to_cell( $firstNew, null, true, 0.9, 0 );
 		}
+
 
 		return true;
 	}
@@ -661,21 +678,26 @@ class Twitter extends GtkWindow
 	{
 		global $d;
 
+echo "\n--OK1.0--\n";
 		$this->twitter->message( 'Marking old messages as read.' );
+echo "\n--OK1.1--\n";
 		$q = $d->createUpdateQuery();
 		$q->update( 'status' )
 		  ->set( 'read', $q->bindValue( 1 ) )
 		  ->where( $q->expr->isNull( 'read' ) );
 		$s = $q->prepare();
 		$s->execute();
-
+echo "\n--OK1--\n";
 		$new = $this->twitter->fetchNewStatuses();
 //		$this->twitter->fetchAllFriends();
 		$this->twitter->message( 'Updating timeline' );
-
+echo "\n--OK2--\n";
 		$this->update_timeline();
+echo "\n--OK3--\n";
 		$this->statusbar->pop(1);
+echo "\n--OK1.1--\n";
 		$this->statusbar->push(1, 'last updated ' . date('Y-m-d H:i') . ' - ' . $new . ' new tweets');
+echo "\n--OK4--\n";
 		if ( $GLOBALS['soundDbus'] && $new > 1 )
 		{
 			try

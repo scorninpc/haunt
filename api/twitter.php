@@ -69,7 +69,7 @@ class drtFetcher
 		{
 			return;
 		}
-        while(Gtk::events_pending() || Gdk::events_pending())
+        while(Gtk::events_pending())
 		{
             Gtk::main_iteration();
         } 
@@ -89,6 +89,7 @@ class drtFetcher
 		{
 			return;
 		}
+
 		$this->statusbar->pop( 1 );
 		$this->statusbar->push( 1, $msg );
 		$this->updateGUI();
